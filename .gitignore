@@ -1,4 +1,5 @@
+/.idea
 /vendor/
-.idea
 composer.lock
-compact.php
+*.cache
+*.log

@@ -9,6 +9,13 @@ declare(strict_types=1);
  * @contact  group@hyperf.io
  * @license  https://github.com/hyperf/hyperf/blob/master/LICENSE
  */
-return [
-    \Hyperf\Contract\StdoutLoggerInterface::class => \WLib\Log\StdoutLogger::class,
-];
+namespace HyperfTest\Cases;
+
+use PHPUnit\Framework\TestCase;
+
+/**
+ * Class AbstractTestCase.
+ */
+abstract class AbstractTestCase extends TestCase
+{
+}
