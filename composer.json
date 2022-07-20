@@ -1,0 +1,30 @@
+{
+  "name": "dongfenghulian/alert-data-client",
+  "description": "alert-data-client",
+  "authors": [
+    {
+      "name": "dfhl",
+      "email": "dev@estrend.com"
+    }
+  ],
+  "autoload": {
+    "files": [
+      "src/Function.php"
+    ],
+    "psr-4": {
+      "AlertClient\\": "src/"
+    }
+  },
+  "require": {
+    "php": ">=8.0",
+    "ext-mysqli": "*",
+    "ext-pdo": "*",
+    "ext-json": "*",
+    "ext-openssl": "*",
+    "ext-redis": "*",
+    "ext-simplexml": "*",
+    "ext-sockets": "*",
+    "ext-xmlwriter": "*",
+    "ext-zip": "*"
+  }
+}
