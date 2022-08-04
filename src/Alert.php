@@ -2,14 +2,8 @@
 
 declare(strict_types=1);
 
-/**
- * @author Dawnc
- * @date   2022-07-20
- */
-
 namespace AlertClient;
 
-use Co\Http\Client;
 use WLib\Lib\HttpClient;
 
 class Alert
@@ -23,13 +17,13 @@ class Alert
         string $developerName = '',
     ): void {
         $json = [
-            "trackId" => $trackId,
-            "alertId" => $alertId,
-            "ip" => $ip,
-            "time_ms" => intval(microtime(true) * 1000),
-            "serviceName" => $serviceName,
-            "developerName" => $developerName,
-            "data" => $data,
+            'trackId' => $trackId,
+            'alertId' => $alertId,
+            'ip' => $ip,
+            'time_ms' => intval(microtime(true) * 1000),
+            'serviceName' => $serviceName,
+            'developerName' => $developerName,
+            'data' => $data,
         ];
 
         $str = json_encode($json);
@@ -39,10 +33,9 @@ class Alert
             try {
                 self::request($sign, $str);
             } catch (\Throwable $e) {
-                var_dump($e);
+                self::log('alert 没配置url ' . $e->getMessage());
             }
         });
-
     }
 
     protected static function request(string $sign, string $data): void
@@ -51,7 +44,7 @@ class Alert
         $url = config('alert_client.server_url');
 
         if (!$url) {
-            self::log("alert 没配置url");
+            self::log('alert 没配置url');
             return;
         }
 
@@ -59,18 +52,15 @@ class Alert
         $client->setHeaders(['sign' => $sign]);
         $client->setData($data);
         $client->execute();
-        var_dump($client->getResponseBody());
         if ($client->getResponseStatus() != 200) {
-            self::log("alert 服务端响应非200状态");
+            self::log('alert 服务端响应非200状态');
         }
-
     }
 
     protected static function log(string $str)
     {
         $dateTime = new \DateTime('now', new \DateTimeZone('Asia/Shanghai'));
-        $file = config('alert_client.log_dir') . "/alert-log-" . $dateTime->format("Y-m-d") . ".log";
-        file_put_contents($file, $dateTime->format("Y-m-d H:i:s") . " " . $str . "\n", FILE_APPEND);
+        $file = config('alert_client.log_dir') . '/alert-log-' . $dateTime->format('Y-m-d') . '.log';
+        file_put_contents($file, $dateTime->format('Y-m-d H:i:s') . ' ' . $str . "\n", FILE_APPEND);
     }
-
 }
