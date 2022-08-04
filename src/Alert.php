@@ -54,7 +54,15 @@ class Alert
         $client->execute();
         if ($client->getResponseStatus() != 200) {
             self::log('alert 服务端响应非200状态');
+            return;
         }
+
+        $res = $client->getResponseBody();
+        $data = json_decode($res, true) ?: [];
+        if (arr_get($data, 'code') !== 0) {
+            self::log('alert 响应失败:' . $res);
+        }
+
     }
 
     protected static function log(string $str)
