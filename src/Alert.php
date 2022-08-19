@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace AlertClient;
 
 use WLib\Lib\HttpClient;
+use WLib\WConfig;
+use WLib\WCtx;
 
 class Alert
 {
@@ -26,6 +28,7 @@ class Alert
             'data' => $data,
         ];
 
+        self::log($json);
         $str = json_encode($json);
         $sign = md5(config('alert_client.key') . $str);
 
@@ -40,7 +43,6 @@ class Alert
 
     protected static function request(string $sign, string $data): void
     {
-        self::log($data);
         $url = config('alert_client.server_url');
 
         if (!$url) {
@@ -60,15 +62,33 @@ class Alert
         $res = $client->getResponseBody();
         $data = json_decode($res, true) ?: [];
         if (arr_get($data, 'code') !== 0) {
-            self::log('alert 响应失败:' . $res);
+            self::log(['message' => 'alert 响应失败:', 'response' => $data, 'src' => $res]);
         }
 
     }
 
-    protected static function log(string $str)
+    protected static function log($str): void
     {
         $dateTime = new \DateTime('now', new \DateTimeZone('Asia/Shanghai'));
         $file = config('alert_client.log_dir') . '/alert-log-' . $dateTime->format('Y-m-d') . '.log';
-        file_put_contents($file, $dateTime->format('Y-m-d H:i:s') . ' ' . $str . "\n", FILE_APPEND);
+        $requestId = WCtx::requestId();
+        $date = $dateTime->format("Y-m-d H:i:s");
+        $category = 'alert';
+        $serviceName = WConfig::get('app_name') ?: '';
+        $tag = '';
+        $time = intval(microtime(true) * 1000);
+        $msg = is_string($str) ? json_encode(['message' => $str], JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES) :
+            json_encode($str, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
+
+        $line = sprintf("[%s] [%s] [%s] [%s] [%s] [%s] %s\n",
+            $date,
+            $serviceName,
+            $category,
+            $tag,
+            $requestId,
+            $time,
+            $msg);
+
+        file_put_contents($file, $line, FILE_APPEND);
     }
 }
