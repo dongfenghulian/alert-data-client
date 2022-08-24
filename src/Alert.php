@@ -89,8 +89,6 @@ class Alert
             $time,
             $msg);
 
-        if (is_writable($file)) {
-            file_put_contents($file, $line, FILE_APPEND);
-        }
+        @file_put_contents($file, $line, FILE_APPEND);
     }
 }
